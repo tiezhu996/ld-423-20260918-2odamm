@@ -4,6 +4,7 @@ import { ChartPreview } from '../components/common/ChartPreview';
 import { ColorPicker } from '../components/common/ColorPicker';
 import { FieldSelector } from '../components/common/FieldSelector';
 import { useChartConfig } from '../hooks/useChartConfig';
+import { useFilteredDataset, useFilteredRows } from '../hooks/useFilteredRows';
 import { useChartStore } from '../stores/chartStore';
 import { useDatasetStore } from '../stores/datasetStore';
 
@@ -14,6 +15,8 @@ export const ChartEditor = () => {
   const charts = useChartStore((state) => state.charts);
   const saveChart = useChartStore((state) => state.saveChart);
   const dataset = datasets.find((candidate) => candidate.id === selectedDatasetId) ?? datasets[0];
+  const filteredDataset = useFilteredDataset(dataset);
+  const { rows, totalRows, isFiltered } = useFilteredRows(dataset);
   const { suggestedConfig, validateConfig } = useChartConfig(dataset);
   const [config, setConfig] = useState(suggestedConfig);
   const errors = useMemo(() => (config ? validateConfig(config) : []), [config, validateConfig]);
@@ -47,7 +50,8 @@ export const ChartEditor = () => {
         <FieldSelector label="分组字段" columns={dataset.columns} value={config.groupField ?? ''} onChange={(groupField) => setConfig({ ...config, groupField })} />
       </aside>
       <section className="preview-stage">
-        <ChartPreview dataset={dataset} config={config} />
+        {isFiltered ? <p className="filter-status">筛选生效中：图表基于 {rows.length} / {totalRows} 行绘制</p> : null}
+        <ChartPreview dataset={filteredDataset} config={config} />
       </section>
       <aside className="config-rail">
         <label className="field-control">

@@ -1,13 +1,26 @@
 import { useMemo, useState } from 'react';
+import { ChartConfig } from '../types';
 import { ChartPreview } from '../components/common/ChartPreview';
 import { EmptyState } from '../components/common/EmptyState';
+import { useFilteredDataset } from '../hooks/useFilteredRows';
 import { useChartStore } from '../stores/chartStore';
 import { useDatasetStore } from '../stores/datasetStore';
+
+const GalleryCard = ({ chart }: { chart: ChartConfig }) => {
+  const dataset = useDatasetStore((state) => state.datasets.find((candidate) => candidate.id === chart.datasetId));
+  const filteredDataset = useFilteredDataset(dataset);
+  return (
+    <article className="gallery-item">
+      <ChartPreview config={chart} dataset={filteredDataset} compact />
+      <strong>{chart.name}</strong>
+      <span>{chart.type} · {chart.colorScheme}</span>
+    </article>
+  );
+};
 
 export const ChartGallery = () => {
   const [query, setQuery] = useState('');
   const charts = useChartStore((state) => state.charts);
-  const datasets = useDatasetStore((state) => state.datasets);
   const visible = useMemo(() => charts.filter((chart) => chart.name.toLowerCase().includes(query.toLowerCase()) || chart.tags.some((tag) => tag.includes(query))), [charts, query]);
 
   return (
@@ -24,11 +37,7 @@ export const ChartGallery = () => {
       ) : (
         <section className="gallery-grid">
           {visible.map((chart) => (
-            <article className="gallery-item" key={chart.id}>
-              <ChartPreview config={chart} dataset={datasets.find((dataset) => dataset.id === chart.datasetId)} compact />
-              <strong>{chart.name}</strong>
-              <span>{chart.type} · {chart.colorScheme}</span>
-            </article>
+            <GalleryCard key={chart.id} chart={chart} />
           ))}
         </section>
       )}

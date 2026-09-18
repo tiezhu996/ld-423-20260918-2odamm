@@ -2,6 +2,7 @@ import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/c
 import { ReactNode } from 'react';
 import { ChartConfig, Report } from '../../types';
 import { ChartPreview } from './ChartPreview';
+import { useFilteredDataset } from '../../hooks/useFilteredRows';
 import { useDatasetStore } from '../../stores/datasetStore';
 
 interface DraggableGridProps {
@@ -34,8 +35,17 @@ const DropCanvas = ({ children }: { children: ReactNode }) => {
   );
 };
 
+const ReportTile = ({ chart }: { chart: ChartConfig }) => {
+  const dataset = useDatasetStore((state) => state.datasets.find((candidate) => candidate.id === chart.datasetId));
+  const filteredDataset = useFilteredDataset(dataset);
+  return (
+    <article className="report-tile">
+      <ChartPreview dataset={filteredDataset} config={chart} compact />
+    </article>
+  );
+};
+
 export const DraggableGrid = ({ report, charts, onAddChart }: DraggableGridProps) => {
-  const datasets = useDatasetStore((state) => state.datasets);
   const handleDragEnd = (event: DragEndEvent) => {
     if (event.over?.id === 'report-canvas') onAddChart(String(event.active.id));
   };
@@ -51,12 +61,7 @@ export const DraggableGrid = ({ report, charts, onAddChart }: DraggableGridProps
         <DropCanvas>
           {report.chartIds.map((chartId) => {
             const chart = charts.find((candidate) => candidate.id === chartId);
-            const dataset = datasets.find((candidate) => candidate.id === chart?.datasetId);
-            return (
-              <article key={chartId} className="report-tile">
-                <ChartPreview dataset={dataset} config={chart} compact />
-              </article>
-            );
+            return chart ? <ReportTile key={chartId} chart={chart} /> : null;
           })}
         </DropCanvas>
       </div>

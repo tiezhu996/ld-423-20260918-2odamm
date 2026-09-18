@@ -1,24 +1,20 @@
-import { useEffect } from 'react';
 import { DataType } from '../types';
 import { DataGrid } from '../components/common/DataGrid';
 import { FilterPanel } from '../components/common/FilterPanel';
 import { EmptyState } from '../components/common/EmptyState';
 import { useDataImport } from '../hooks/useDataImport';
+import { useFilteredRows } from '../hooks/useFilteredRows';
 import { useDatasetStore } from '../stores/datasetStore';
 
 export const Workspace = () => {
   const { importFile, error } = useDataImport();
   const datasets = useDatasetStore((state) => state.datasets);
   const selectedDatasetId = useDatasetStore((state) => state.selectedDatasetId);
-  const loadDatasets = useDatasetStore((state) => state.loadDatasets);
   const addDataset = useDatasetStore((state) => state.addDataset);
   const selectDataset = useDatasetStore((state) => state.selectDataset);
   const updateColumnType = useDatasetStore((state) => state.updateColumnType);
   const dataset = datasets.find((candidate) => candidate.id === selectedDatasetId);
-
-  useEffect(() => {
-    void loadDatasets();
-  }, [loadDatasets]);
+  const { rows, totalRows, activeFilterCount, isFiltered } = useFilteredRows(dataset);
 
   return (
     <main className="page">
@@ -65,7 +61,10 @@ export const Workspace = () => {
                 </label>
               ))}
             </div>
-            <DataGrid rows={dataset.data} columns={dataset.columns} />
+            <p className="filter-status">
+              {isFiltered ? `筛选生效中：显示 ${rows.length} / ${totalRows} 行（${activeFilterCount} 个条件），全站页面同步该结果` : `未启用筛选，显示全部 ${totalRows} 行`}
+            </p>
+            <DataGrid rows={rows} columns={dataset.columns} />
           </section>
           <FilterPanel datasetId={dataset.id} />
         </div>

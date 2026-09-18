@@ -31,9 +31,12 @@ input, select { width: 100%; border: 1px solid var(--line); background: var(--su
 .chart-preview { width: 100%; }
 .chart-preview--empty, .empty-state { display: grid; place-items: center; min-height: 220px; color: var(--muted); text-align: center; padding: 28px; }
 .empty-state__mark { font-size: 3rem; color: var(--accent); }
-.filter-panel { display: grid; gap: 14px; }
+.filter-panel { display: grid; gap: 14px; align-content: start; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; }
-.filter-row { display: grid; grid-template-columns: auto 1fr 1fr 1fr auto; gap: 8px; align-items: center; }
+.filter-row { display: grid; grid-template-columns: auto 1fr 1fr minmax(0, 1.4fr) auto; gap: 8px; align-items: center; }
+.filter-values { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.filter-hint, .filter-status { color: var(--muted); font-size: .85rem; margin: 0; }
+.filter-status { margin-bottom: 12px; }
 .preview-stage { min-width: 0; }
 .palette-list, .saved-list { display: grid; gap: 10px; margin: 16px 0; }
 .palette { display: flex; justify-content: space-between; align-items: center; background: transparent; color: var(--ink); border: 1px solid var(--line); padding: 10px; }

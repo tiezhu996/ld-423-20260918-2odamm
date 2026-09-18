@@ -1,14 +1,24 @@
+import { useEffect } from 'react';
 import { Navigate, NavLink, Outlet, createBrowserRouter } from 'react-router-dom';
 import { ChartEditor } from '../pages/ChartEditor';
 import { ChartGallery } from '../pages/ChartGallery';
 import { ReportBuilder } from '../pages/ReportBuilder';
 import { Statistics } from '../pages/Statistics';
 import { Workspace } from '../pages/Workspace';
+import { useDatasetStore } from '../stores/datasetStore';
+import { useFilterStore } from '../stores/filterStore';
 import { useThemeStore } from '../stores/themeStore';
 
 const AppShell = () => {
   const mode = useThemeStore((state) => state.mode);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
+  const loadDatasets = useDatasetStore((state) => state.loadDatasets);
+  const loadFilters = useFilterStore((state) => state.loadFilters);
+
+  useEffect(() => {
+    void loadDatasets();
+    void loadFilters();
+  }, [loadDatasets, loadFilters]);
   return (
     <div className="app-shell" data-theme={mode}>
       <nav className="main-nav">
