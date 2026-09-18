@@ -4,6 +4,7 @@ import { DataGrid } from '../components/common/DataGrid';
 import { FilterPanel } from '../components/common/FilterPanel';
 import { EmptyState } from '../components/common/EmptyState';
 import { useDataImport } from '../hooks/useDataImport';
+import { useFilteredDataset } from '../hooks/useFilteredDataset';
 import { useDatasetStore } from '../stores/datasetStore';
 
 export const Workspace = () => {
@@ -15,6 +16,7 @@ export const Workspace = () => {
   const selectDataset = useDatasetStore((state) => state.selectDataset);
   const updateColumnType = useDatasetStore((state) => state.updateColumnType);
   const dataset = datasets.find((candidate) => candidate.id === selectedDatasetId);
+  const filtered = useFilteredDataset(dataset);
 
   useEffect(() => {
     void loadDatasets();
@@ -42,7 +44,7 @@ export const Workspace = () => {
         </label>
       </section>
       {error ? <div className="error-box">{error}</div> : null}
-      {dataset ? (
+      {dataset && filtered ? (
         <div className="workspace-grid">
           <aside className="dataset-list">
             {datasets.map((candidate) => (
@@ -65,7 +67,20 @@ export const Workspace = () => {
                 </label>
               ))}
             </div>
-            <DataGrid rows={dataset.data} columns={dataset.columns} />
+            <div className="filter-status" aria-live="polite">
+              {filtered.isFiltered ? (
+                <span>
+                  全局筛选生效中：{filtered.activeFilterCount} 条条件，显示 {filtered.filteredRows}/{filtered.totalRows} 行
+                </span>
+              ) : (
+                <span>未启用筛选，显示全部 {filtered.totalRows} 行</span>
+              )}
+            </div>
+            {filtered.rows.length === 0 ? (
+              <EmptyState title="没有命中的行" description="停用或调整右侧筛选条件，仅会恢复对应条件排除的行。" />
+            ) : (
+              <DataGrid rows={filtered.rows} columns={dataset.columns} />
+            )}
           </section>
           <FilterPanel datasetId={dataset.id} />
         </div>

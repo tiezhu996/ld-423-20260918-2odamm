@@ -1,7 +1,7 @@
 import { DndContext, DragEndEvent, useDraggable, useDroppable } from '@dnd-kit/core';
 import { ReactNode } from 'react';
 import { ChartConfig, Report } from '../../types';
-import { ChartPreview } from './ChartPreview';
+import { FilteredChartPreview } from './FilteredChartPreview';
 import { useDatasetStore } from '../../stores/datasetStore';
 
 interface DraggableGridProps {
@@ -54,7 +54,7 @@ export const DraggableGrid = ({ report, charts, onAddChart }: DraggableGridProps
             const dataset = datasets.find((candidate) => candidate.id === chart?.datasetId);
             return (
               <article key={chartId} className="report-tile">
-                <ChartPreview dataset={dataset} config={chart} compact />
+                <FilteredChartPreview dataset={dataset} config={chart} compact />
               </article>
             );
           })}

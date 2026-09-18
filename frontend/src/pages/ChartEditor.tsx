@@ -4,6 +4,7 @@ import { ChartPreview } from '../components/common/ChartPreview';
 import { ColorPicker } from '../components/common/ColorPicker';
 import { FieldSelector } from '../components/common/FieldSelector';
 import { useChartConfig } from '../hooks/useChartConfig';
+import { useFilteredDataset } from '../hooks/useFilteredDataset';
 import { useChartStore } from '../stores/chartStore';
 import { useDatasetStore } from '../stores/datasetStore';
 
@@ -14,6 +15,7 @@ export const ChartEditor = () => {
   const charts = useChartStore((state) => state.charts);
   const saveChart = useChartStore((state) => state.saveChart);
   const dataset = datasets.find((candidate) => candidate.id === selectedDatasetId) ?? datasets[0];
+  const filtered = useFilteredDataset(dataset);
   const { suggestedConfig, validateConfig } = useChartConfig(dataset);
   const [config, setConfig] = useState(suggestedConfig);
   const errors = useMemo(() => (config ? validateConfig(config) : []), [config, validateConfig]);
@@ -22,7 +24,7 @@ export const ChartEditor = () => {
     if (!config && suggestedConfig) setConfig(suggestedConfig);
   }, [config, suggestedConfig]);
 
-  if (!config || !dataset) return null;
+  if (!config || !dataset || !filtered) return null;
 
   return (
     <main className="page editor-grid">
@@ -47,7 +49,12 @@ export const ChartEditor = () => {
         <FieldSelector label="分组字段" columns={dataset.columns} value={config.groupField ?? ''} onChange={(groupField) => setConfig({ ...config, groupField })} />
       </aside>
       <section className="preview-stage">
-        <ChartPreview dataset={dataset} config={config} />
+        <div className="filter-status" aria-live="polite">
+          {filtered.isFiltered
+            ? `全局筛选生效中：${filtered.activeFilterCount} 条条件，基于 ${filtered.filteredRows}/${filtered.totalRows} 行绘制`
+            : `未启用筛选，基于全部 ${filtered.totalRows} 行绘制`}
+        </div>
+        <ChartPreview dataset={dataset} config={config} rows={filtered.rows} />
       </section>
       <aside className="config-rail">
         <label className="field-control">

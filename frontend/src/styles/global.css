@@ -31,9 +31,21 @@ input, select { width: 100%; border: 1px solid var(--line); background: var(--su
 .chart-preview { width: 100%; }
 .chart-preview--empty, .empty-state { display: grid; place-items: center; min-height: 220px; color: var(--muted); text-align: center; padding: 28px; }
 .empty-state__mark { font-size: 3rem; color: var(--accent); }
-.filter-panel { display: grid; gap: 14px; }
+.filter-panel { display: grid; gap: 14px; align-content: start; }
 .panel-heading { display: flex; align-items: center; justify-content: space-between; }
-.filter-row { display: grid; grid-template-columns: auto 1fr 1fr 1fr auto; gap: 8px; align-items: center; }
+.filter-row { display: grid; grid-template-columns: auto 1fr 1fr 1.4fr auto; gap: 8px; align-items: center; }
+.filter-row.is-off { opacity: .55; }
+.filter-between { display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px; align-items: center; }
+.filter-between span { color: var(--muted); }
+.filter-remove, .filter-clear { padding: 6px 10px; font-size: .85rem; }
+.filter-fix { padding: 8px; font-size: .8rem; border-color: var(--danger); color: var(--danger); background: color-mix(in oklch, var(--danger) 8%, var(--surface-raised)); }
+.is-invalid { border-color: var(--danger); }
+.filter-summary { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: .88rem; }
+.filter-hint, .filter-empty { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.5; }
+.filter-status { border: 1px solid var(--accent-2); color: var(--accent-2); padding: 10px 14px; margin-bottom: 16px; font-size: .9rem; background: color-mix(in oklch, var(--accent-2) 8%, var(--surface-raised)); }
+.filter-badge { border: 1px solid var(--accent); color: var(--accent); background: color-mix(in oklch, var(--accent) 12%, var(--surface-raised)); padding: 7px 11px; font-size: .85rem; white-space: nowrap; }
+.statistics-controls { display: flex; gap: 14px; align-items: end; }
+.statistics-controls .field-control { min-width: 180px; }
 .preview-stage { min-width: 0; }
 .palette-list, .saved-list { display: grid; gap: 10px; margin: 16px 0; }
 .palette { display: flex; justify-content: space-between; align-items: center; background: transparent; color: var(--ink); border: 1px solid var(--line); padding: 10px; }
